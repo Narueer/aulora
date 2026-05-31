@@ -7,7 +7,6 @@ import { docentes } from "@/data/docentes";
 import { cursos } from "@/data/cursos";
 import { recursos } from "@/data/recursos";
 
-
 export default function BuscarPage() {
   const [busqueda, setBusqueda] = useState("");
 
@@ -31,9 +30,13 @@ export default function BuscarPage() {
     })),
   ];
 
-  const filtrados = resultados.filter((item) =>
-    item.titulo.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const filtrados = resultados
+    .filter(
+      (item) =>
+        item.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
+        item.tipo.toLowerCase().includes(busqueda.toLowerCase())
+    )
+    .sort((a, b) => a.titulo.localeCompare(b.titulo));
 
   return (
     <main className="min-h-screen bg-slate-900 text-white p-8">
@@ -51,22 +54,36 @@ export default function BuscarPage() {
           className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 mb-6"
         />
 
+        <p className="mb-4 text-slate-400">
+          Resultados: {filtrados.length}
+        </p>
+
         <div className="grid gap-4">
+
           {filtrados.map((item, index) => (
             <Link
               key={index}
               href={item.url}
-              className="bg-slate-800 p-4 rounded-lg hover:bg-slate-700"
+              className="bg-slate-800 p-4 rounded-lg hover:bg-slate-700 transition"
             >
-              <h2 className="font-bold">
+              <h2 className="font-bold text-lg">
                 {item.titulo}
               </h2>
 
               <p className="text-slate-400">
-                {item.tipo}
+                {item.tipo === "DOCENTE" && "👨‍🏫 DOCENTE"}
+                {item.tipo === "CURSO" && "📚 CURSO"}
+                {item.tipo === "RECURSO" && "📄 RECURSO"}
               </p>
             </Link>
           ))}
+
+          {filtrados.length === 0 && (
+            <div className="bg-slate-800 p-4 rounded-lg">
+              No se encontraron resultados.
+            </div>
+          )}
+
         </div>
 
       </div>
